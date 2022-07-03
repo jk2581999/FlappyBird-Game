@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+
+    <link href="StyleSheet.css" rel="stylesheet" />
+</head>
+<body id="bd" onload="loadingfun()">
+    <audio id="soundBg">
+        <source src="Sounds/main.mp3" type="audio/mp3" />
+
+    </audio>
+    <audio id="soundOver">
+        <source src="Sounds/gameover.mp3" type="audio/mp3" />
+
+    </audio>
+    <audio id="soundJump">
+        <source src="Sounds/jump.mp3" type="audio/mp3" />
+
+    </audio>
+    <audio id="soundCoin">
+        <source src="Sounds/coin.mp3" type="audio/mp3" />
+
+    </audio>
+    <div id="loading" style="z-index: 2; width: 800px; height: 322px; position: absolute; background-image: url(img/b2.gif); background-repeat: no-repeat; top: 22%; left: 50%; ">
+
+    </div>
+    <div id="main" style="background-image: url(img/bg1.png ); height: 322px; background-repeat: repeat-x; width: 800px; margin:auto; position:relative; overflow:hidden; ">
+        <div id="sboard" style="background-image: url(img/score.png ); display:none; height: 250px; background-repeat: no-repeat; width: 200px; margin: auto; position: absolute; top: 22%; left: 40%;">
+            <label id="lbl2" style="padding-top: 80px; padding-left: 80px; display: inline-block;">
+                0
+            </label>
+            <input type="button" value="RESTART" onclick="restart()" style="padding: 0px; width: 80px; line-height: 40px; border: 1px solid black; height: 40px; font-size: 19px; border-radius: 25px; background-color: red; position: absolute; bottom: 50px; left: 50px;" />
+
+        </div>
+        <!--  <div id="bird" style="background-image: url(img/b2.gif ); background-repeat:no-repeat; height: 50px; width: 800px;   ">-->
+        <div id="bg2" style="background-image: url(img/bg2.png ); background-repeat: repeat-x; position:absolute; height: 50px; width: 800px; margin: 287px 0px 0px 0px; ">
+            <img id="bird" style=" position: absolute;  left: 100px; bottom: 90px;" src="img/b2.gif" />
+            <label id="lbl1">
+                0
+            </label>
+
+        </div>
+        <input type="button" value="start" onclick="start()" />
+
+        <input type="button" value="Stop" onclick="stop()" />
+
+    </div>
+
+    <script>
+        var timer1
+        var timer2
+        var pos = 0;
+        var i = 1;
+        var count = 0;
+        var bleft = document.getElementById("bird").style.left;
+        var scoreimg = document.getElementById("sboard");
+        //Sound
+        var bgMusic = document.getElementById("soundBg");
+        var gameOverMusic = document.getElementById("soundOver");
+        var JumpmMsic = document.getElementById("soundJump");
+        var CoinmMsic = document.getElementById("soundCoin");
+        var gameOver;
+        var score = 0;
+        var level = 0;
+        var obs;
+        var crow = 0;
+
+
+        document.getElementById("bd").addEventListener("keyup", function (event) {
+
+            var key = event.charCode || event.keyCode;
+
+            if (key == 38) {
+
+                var hight = document.getElementById("bird").style.bottom;
+                hight = parseInt(hight.substr(0, hight.length - 2));
+
+                document.getElementById("bird").style.bottom = hight + 40 + "px";
+            }
+            else if (key == 40) {
+
+                var hight = document.getElementById("bird").style.bottom;
+                hight = parseInt(hight.substr(0, hight.length - 2));
+
+                document.getElementById("bird").style.bottom = hight - 40 + "px";
+            }
+
+        })
+
+
+
+        function timer1ticks() {
+
+            pos = parseInt(pos) - i;
+
+            count++;
+            crow++;
+
+            document.getElementById("main").style.backgroundPosition = pos + "px";
+            if (crow == 800) {
+                obs();
+                crow = 0;
+            }
+            if (count == 500) {
+
+                Pillers();
+
+                count = 0;
+
+                level++;
+
+            }
+
+        }
+        function timer2ticks() {
+            var hight = document.getElementById("bird").style.bottom;
+            hight = parseInt(hight.substr(0, hight.length - 2));
+
+            hight = parseInt(hight) - i - 5;
+            document.getElementById("bird").style.bottom = hight + "px";
+            //console.log(hight);
+            if (hight < 0 || hight > 316) {
+
+
+                gameOver()
+
+            }
+            else {
+
+            }
+        }
+
+        function start() {
+
+
+            timer1 = setInterval(timer1ticks, 10);
+            timer2 = setInterval(timer2ticks, 100);
+
+        }
+        function gameOver() {
+            scoreimg.style.display = 'block';
+            lbl2.innerHTML = score.toString();
+            bgMusic.pause();
+            gameOverMusic.play();
+            //alert("Game Over");
+            clearInterval(timer1);
+            clearInterval(timer2);
+            clearInterval(timerPill);
+            //restart();
+
+        }
+        function restart() {
+
+
+            document.location.reload();
+            timer1 = setInterval(timer1ticks, 10);
+            timer2 = setInterval(timer2ticks, 100);
+
+        }
+        function stop() {
+            clearInterval(timer1);
+            clearInterval(timer2);
+            clearInterval(timerPill);
+            clearInterval(scoreboard);
+            clearInterval(obsmovment);
+            bgMusic.pause();
+
+        }
+
+        function obs() {
+            var vpos = 140;
+            var toppos = Math.floor((Math.random() * vpos) + 100);
+            var obsImg = document.createElement("img");
+            obsImg.style.height = "30px";
+            obsImg.style.width = "60px";
+            obsImg.src = "img/crow.gif";
+
+            //obsImg.src = "http://www.animatedimages.org/data/media/1754/animated-crow-image-0005.gif";
+            obsImg.style.display = "inline-block";
+            obsImg.style.position = "absolute";
+            //obsImg.style.top = toppos + "px";
+            obsImg.className = "obsclass";
+            obsImg.id = "obsid";
+            obsImg.style.left = 600 + "px";
+            document.getElementById("main").appendChild(obsImg);
+            obsmovment = setInterval(obsmovment, 5);
+        }
+        var obsmovment;
+        function obsmovment() {
+            var crowclass = document.getElementsByClassName("obsclass");
+            if (crowclass.length > 0) {
+             
+                var ohight = document.getElementById("bird").style.bottom;
+                 ohight = parseInt(ohight.substr(0, ohight.length - 2));
+                
+                for (var i = 0; i < crowclass.length; i++) {
+                    var crowOne = getComputedStyle(crowclass[i]);
+                    
+                     var oPos = crowOne.left;
+                 //  console.log(oPos);
+                    oPos = parseInt(oPos.substr(0, oPos.length - 2));
+
+                    oPos--;
+                    crowclass[i].style.left = oPos + "px";
+                    if (oPos == 10) {
+                        document.getElementById("main").removeChild(crowclass[i]);
+                        //gameOver()
+                    }
+                    //console.log("Size is =" + crowclass.style.left);
+                    var obstop = getComputedStyle(crowclass[i]).bottom;
+                   
+                    obstop = parseInt(obstop.substr(0, obstop.length - 2));
+                    
+
+
+                    if (oPos == 100) {
+                        if (ohight != obstop ) {
+                           
+                            
+
+                        }
+                        else {
+                            console.log("crow height =" + obstop + "bird =" + ohight);
+                            gameOver();
+                        }
+                        //console.log(oPos);
+                    }
+
+                }
+            }
+        }
+        function Pillers() {
+            var vpos = 140;
+            var toppos = Math.floor((Math.random() * vpos) + 100);
+            var botpos = 400 - toppos;
+            var leftpos = 500;
+            XPos = Math.floor((Math.random() * leftpos) + 200);
+            var xyz = XPos - 1;
+
+
+            var img = document.createElement("img");
+            img.style.height = "298px";
+            img.style.width = "30px";
+            img.src = "img/vine.png";
+            img.style.display = "inline-block";
+            img.style.position = "absolute";
+            img.style.top = toppos + "px";
+            img.id = "lpos";
+            img.className = "tPill";
+            img.style.left = 700 + "px";
+
+
+            document.getElementById("main").appendChild(img);
+
+
+            img = document.createElement("img");
+            img.style.height = "298px";
+            img.style.width = "30px";
+            img.src = "img/vine.png";
+            img.style.display = "inline-block";
+            img.style.position = "absolute";
+            img.style.bottom = botpos + "px";
+            img.style.left = 700 + "px";
+            img.className = "bPill";
+            document.getElementById("main").appendChild(img);
+            clearInterval(timerPill);
+            timerPill = setInterval(PillMovement, 10);
+            if (score > 1 && score < 3) {
+                clearInterval(timer1);
+                timer1 = setInterval(timer1ticks, 8);
+                clearInterval(timerPill);
+                timerPill = setInterval(PillMovement, 8);
+                console.log(score);
+
+            }
+            else if (score > 4) {
+                clearInterval(timer1);
+                timer1 = setInterval(timer1ticks, 5);
+                clearInterval(timerPill);
+                timerPill = setInterval(PillMovement, 1);
+
+            }
+
+
+
+        }
+
+        var timerPill;
+        function PillMovement() {
+            var hight = document.getElementById("bird").style.bottom;
+            hight = parseInt(hight.substr(0, hight.length - 2));
+            //console.log(hight);
+            var pillTop = document.getElementsByClassName("tPill");
+            var pillBottom = document.getElementsByClassName("bPill");
+            for (var i = 0; i < pillTop.length; i++) {
+                var xPos = pillTop[i].style.left;
+
+                xPos = parseInt(xPos.substr(0, xPos.length - 2));
+
+                xPos--;
+                pillTop[i].style.left = xPos + "px";
+                pillBottom[i].style.left = xPos + "px";
+
+                var pbot = pillTop[i].style.top;
+                var ptop = pillBottom[i].style.bottom;
+                ptop = parseInt(ptop.substr(0, ptop.length - 2));
+                pbot = parseInt(pbot.substr(0, pbot.length - 2));
+                pbot = 320 - pbot;
+
+
+                if (xPos == 120) {
+                    if (hight < pbot || hight > ptop) {
+                        gameOver()
+
+                    }
+                    else {
+                        JumpmMsic.play();
+                        i++;
+                        score = parseInt(score) + i;
+                        lbl1.innerHTML = "total Score - " + score.toString();
+
+                    }
+                }
+
+                else if (xPos == 10) {
+                    document.getElementById("main").removeChild(pillTop[i]);
+                    document.getElementById("main").removeChild(pillBottom[i]);
+
+                }
+            }
+
+        }
+        var abc = document.getElementById("loading");
+        function loadingfun() {
+
+            abc.style.display = 'none';
+            bgMusic.play();
+        }
+
+
+    </script>
+</body>
+</html>
